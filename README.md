@@ -42,4 +42,4 @@ const typings = {
 * primitive types - `string`, `number`, `boolean`, `date`, and `undefined`
 * optional types, defined with `?`, like `string?`
 * union types, defined with `|`, like `string|number`
-* array types, defined as `[arrayItemType, canArrayBeUndefined]`
+* array types, defined as `[arrayItemType, isOptional]`

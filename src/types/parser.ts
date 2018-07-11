@@ -1,4 +1,5 @@
 import OptionalType from './optional'
+import ArrayType from './array'
 import { booleanType, dateType, IType, numberType, stringType } from './primitive'
 import UnionType from './union'
 
@@ -13,11 +14,12 @@ export default function parseType(typeValue: any[]|string): IType {
     }
     const [childTypeString, isOptional] = typeValue
     const childType = parseType(childTypeString)
+    const arrayType = new ArrayType(childType)
 
     if (isOptional) {
-      return new OptionalType(childType)
+      return new OptionalType(arrayType)
     } else {
-      return childType
+      return arrayType
     }
   } else {
     const parts = typeValue.split('|').map(s => s.trim())
