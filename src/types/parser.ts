@@ -3,35 +3,49 @@ import { booleanType, dateType, IType, numberType, stringType } from './primitiv
 import UnionType from './union'
 
 /**
- * @param {string} typeString - string representing expected type
+ * @param {any} typeValue - string representing expected type
  * @returns {IType} parsed type instance
  */
-export default function parseType(typeString: string): IType {
-	const parts = typeString.split('|').map(s => s.trim())
+export default function parseType(typeValue: any[]|string): IType {
+  if (typeValue instanceof Array) {
+    if (typeValue.length !== 2) {
+      throw new Error('Array type format is invalid')
+    }
+    const [childTypeString, isOptional] = typeValue
+    const childType = parseType(childTypeString)
 
-	if (parts.length > 1) {
+    if (isOptional) {
+      return new OptionalType(childType)
+    } else {
+      return childType
+    }
+  } else {
+    const parts = typeValue.split('|').map(s => s.trim())
 
-		const childTypes = parts.map(childType => parseType(childType))
-		return new UnionType(childTypes)
+    if (parts.length > 1) {
 
-	} else if (parts[0].slice(-1) === '?') {
+      const childTypes = parts.map(childType => parseType(childType))
+      return new UnionType(childTypes)
 
-		const childType = parseType(parts[0].slice(0, -1))
-		return new OptionalType(childType)
+    } else if (parts[0].slice(-1) === '?') {
 
-	} else {
+      const childType = parseType(parts[0].slice(0, -1))
+      return new OptionalType(childType)
 
-		switch (parts[0]) {
-			case 'string':
-				return stringType
-			case 'number':
-				return numberType
-			case 'boolean':
-				return booleanType
-			case 'date':
-				return dateType
-			default:
-				throw new Error('Unknown type: ' + parts[0])
-		}
-	}
+    } else {
+
+      switch (parts[0]) {
+        case 'string':
+          return stringType
+        case 'number':
+          return numberType
+        case 'boolean':
+          return booleanType
+        case 'date':
+          return dateType
+        default:
+          throw new Error('Unknown type: ' + parts[0])
+      }
+    }
+  }
 }
