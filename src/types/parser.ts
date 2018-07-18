@@ -7,7 +7,7 @@ import UnionType from './union'
  * @param {any} typeValue - string representing expected type
  * @returns {IType} parsed type instance
  */
-export default function parseType(typeValue: any[]|string): IType {
+export default function parseType(typeValue: any[]|Object|string): IType {
   if (typeValue instanceof Array) {
     if (typeValue.length !== 2) {
       throw new Error('Array type format is invalid')
@@ -21,8 +21,10 @@ export default function parseType(typeValue: any[]|string): IType {
     } else {
       return arrayType
     }
+  } else if (typeValue instanceof Object) {
+    throw new Error('Cannot parse object')
   } else {
-    const parts = typeValue.split('|').map(s => s.trim())
+    const parts = (typeValue as string).split('|').map(s => s.trim())
 
     if (parts.length > 1) {
 
